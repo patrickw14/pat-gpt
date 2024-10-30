@@ -14,8 +14,28 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                primary: {
+                    "50": "#eeefff",
+                    "100": "#dddeff",
+                    "200": "#bcbdff",
+                    "300": "#9a9cff",
+                    "400": "#797bff",
+                    "500": "#575aff",
+                    "600": "#4648cc",
+                    "700": "#343699",
+                    "800": "#232466",
+                    "900": "#111233"
+                }
+            }
         },
     },
 
     plugins: [forms],
+    purge: [
+        './resources/views/**/*.blade.php',
+        './resources/js/**/*.vue',
+        './resources/**/*.js',
+        './resources/**/*.jsx',
+    ],
 };
