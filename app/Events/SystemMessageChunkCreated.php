@@ -16,21 +16,27 @@ class SystemMessageChunkCreated implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $message;
+    public $conversationId;
+    public $messageId;
+    public $chunk;
 
-    public function __construct(Message $message)
+    public function __construct($conversationId, $messageId, $chunk)
     {
-        $this->message = $message;
+        $this->conversationId = $conversationId;
+        $this->messageId = $messageId;
+        $this->chunk = $chunk;
     }
 
     public function broadcastOn()
     {
-        Log::info('Broadcasting system message chunk: ' . $this->message->content);
-        return new PrivateChannel('chat.' . $this->message->conversation_id);
+        return new PrivateChannel('chat.' . $this->conversationId);
     }
 
     public function broadcastWith()
     {
-        return ['message' => $this->message];
+        return [
+            'messageId' => $this->messageId,
+            'chunk' => $this->chunk
+        ];
     }
 }

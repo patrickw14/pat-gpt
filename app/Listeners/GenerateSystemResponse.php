@@ -25,26 +25,27 @@ class GenerateSystemResponse implements ShouldQueue
 
     private function generateSystemResponseInChunks($userMessageContent, $conversationId)
     {
+        $systemResponse = "This is the system response to '" . $userMessageContent . "', which is being streamed as if its coming from an LLM, even though it isn't.";
         // Example: Simulate chunked response generation
-        $chunks = [
-            "System response part 1 to: " . $userMessageContent,
-            "System response part 2 to: " . $userMessageContent,
-            "System response part 3 to: " . $userMessageContent,
-        ];
+
+        // Chunk $systemResponse into 12-character chunks
+        $chunks = str_split($systemResponse, 12);
+
+        // Save system response chunk
+        $messageId = Message::max('id') + 1;
+        $systemMessage = new Message();
+        $systemMessage->id = $messageId;
+        $systemMessage->conversation_id = $conversationId;
+        $systemMessage->content = $systemResponse;
+        $systemMessage->type = 'system';
+        $systemMessage->save();
 
         foreach ($chunks as $chunk) {
             // Simulate delay
-            usleep(300000);
-
-            // Save system response chunk
-            $systemMessage = new Message();
-            $systemMessage->conversation_id = $conversationId;
-            $systemMessage->content = $chunk;
-            $systemMessage->type = 'system';
-            $systemMessage->save();
+            usleep(100000);
 
             // Broadcast system message chunk
-            SystemMessageChunkCreated::dispatch($systemMessage);
+            SystemMessageChunkCreated::dispatch($conversationId, $messageId, $chunk);
         }
     }
 }

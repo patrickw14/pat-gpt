@@ -71,7 +71,20 @@
                 this.scrollToBottom();
 
                 window.Echo.private(`chat.${selectedConversation.id}`).listen("SystemMessageChunkCreated", (event) => {
-                    this.pushMessage(event.message);
+                    const existingMessage = this.messages.find(message => message.id === event.messageId);
+                    if (existingMessage) {
+                        existingMessage.content += event.chunk;
+                    } else {
+                        this.messages.push({
+                            id: event.messageId,
+                            content: event.chunk,
+                            conversation_id: @json($selectedConversation).id,
+                            type: 'system',
+                            created_at: new Date().toISOString(),
+                            updated_at: new Date().toISOString()
+                        });
+                    }
+                    this.scrollToBottom();
                 });
             },
             pushMessage(message) {
