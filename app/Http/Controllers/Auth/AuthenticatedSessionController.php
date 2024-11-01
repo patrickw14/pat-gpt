@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Conversation;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -28,8 +29,9 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('chat', absolute: false));
-    }
+        $latestConversation = Conversation::where('user_id', auth()->user()->id)->latest()->first();
+
+        return redirect()->intended(route('chat', ['conversationId' => $latestConversation->id], absolute: false));    }
 
     /**
      * Destroy an authenticated session.
