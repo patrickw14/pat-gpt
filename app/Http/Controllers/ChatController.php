@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Conversation;
 use App\Models\Message;
 use Illuminate\Support\Facades\Log;
+use App\Events\UserMessageSent;
 
 class ChatController extends Controller
 {
@@ -32,6 +33,8 @@ class ChatController extends Controller
         $message->content = $request->content;
         $message->type = "user";
         $message->save();
+
+        UserMessageSent::dispatch($message);
 
         return response()->json(['success' => true, 'message' => $message->content]);
     }
