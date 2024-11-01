@@ -34,7 +34,9 @@ class ChatController extends Controller
         $message->type = "user";
         $message->save();
 
+        Log::info('sent before');
         UserMessageSent::dispatch($message);
+        Log::info('sent after');
 
         return response()->json(['success' => true, 'message' => $message->content]);
     }

@@ -15,6 +15,8 @@ class UserMessageSent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public $message;
+
     /**
      * Create a new event instance.
      */

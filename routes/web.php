@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ChatController;
 use App\Models\Conversation;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Broadcast;
 
 Route::get('/', function () {
     return redirect('chat');
@@ -23,5 +24,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Broadcast::routes(['middleware' => ['auth:api']]);
 
 require __DIR__.'/auth.php';
