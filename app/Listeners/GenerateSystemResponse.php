@@ -19,11 +19,10 @@ class GenerateSystemResponse implements ShouldQueue
     {
         $userMessage = $event->message;
 
-        // Generate system response in chunks
-        $this->generateSystemResponseInChunks($userMessage->content, $userMessage->conversation_id);
+        $this->simulateSystemResponse($userMessage->content, $userMessage->conversation_id);
     }
 
-    private function generateSystemResponseInChunks($userMessageContent, $conversationId)
+    private function simulateSystemResponse($userMessageContent, $conversationId)
     {
         $systemResponse = "This is the system response to '" . $userMessageContent . "', which is being streamed as if its coming from an LLM, even though it isn't.";
         // Example: Simulate chunked response generation
@@ -36,13 +35,18 @@ class GenerateSystemResponse implements ShouldQueue
         $systemMessage = new Message();
         $systemMessage->id = $messageId;
         $systemMessage->conversation_id = $conversationId;
-        $systemMessage->content = $systemResponse;
+        // Create a message with empty content to represent the system message
+        $systemMessage->content = '';
         $systemMessage->type = 'system';
         $systemMessage->save();
 
         foreach ($chunks as $chunk) {
             // Simulate delay
             usleep(100000);
+
+            // Update the message from earlier to include this chunk
+            $systemMessage->content = $systemMessage->content . $chunk;
+            $systemMessage->save();
 
             // Broadcast system message chunk
             SystemMessageChunkCreated::dispatch($conversationId, $messageId, $chunk);
